@@ -5,9 +5,10 @@ Feature: Verify Credit Card APIs
 
 Scenario: Submit Application
 		Given the payLoad required for "Submit"
-		When PostAPI method is executed for Application Submit
+		When PostAPI method is executed for "Submit"
 		Then status code of response should be 200
-		And response is as expected with eligibilty as "APPROVED"
+		And response is having "eligibility" as "APPROVED"
+		And row is created in subsequent tables with application_type as "CREDIT_CARD_SECURED_APPLICATION_V1"
 
 # Scenario: Verify multiple buid
 # 		Given the payLoad details with "<buids>" for "<Submit>"

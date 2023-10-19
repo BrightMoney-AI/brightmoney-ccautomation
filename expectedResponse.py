@@ -72,6 +72,6 @@ def submitResponse(context, userid):
     "origination_fee": 0.0,
     "min_monthly_payment": 278,
     "d2ch_risk": "medium"
-        }   
-    }
+    }   
+}
     return submitResponse

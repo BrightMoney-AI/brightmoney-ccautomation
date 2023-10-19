@@ -41,17 +41,54 @@ def step_impl(context,statusCode):
     assert context.response.status_code == statusCode
 
 
-@then('response is as expected with eligibilty as "{eligibility}"')
-def step_impl(context, eligibility):
-    #assert context.response == submitResponse()
-    
-    print(context.response.json())
+@then('response is having "{param}" as "{value}"')
+def step_impl(context, param, value):
+    #assert context.response == submitResponse()    
+    #print(context.response.json())
     response_json = context.response.json()
     print("Print")
     context.buid = response_json['meta']['bright_uid']
     print(context.buid)
-    assert response_json['data']['eligibility'] == eligibility
+    assert response_json['data'][param] == value
+
+@then('row is created in subsequent tables with application_type as "{app_value}"')
+def step_impl(context, app_value):
+    data = {}
+    try :   
+        conn = getConnection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s;",(context.buid,))
+        bright_user_id = cur.fetchone()
+        if bright_user_id != None:                      
+            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on",(bright_user_id[0],))
+            application_id = cur.fetchone()[0]    
+            app_type_db = cur.fetchone()[6]
+            if application_id != None:  
+                cur.execute("SELECT * FROM lsp_applicationhistory WHERE application_id = %s ORDER BY created_on",(application_id),)   
+                app_state_db = cur.fetchone()[4]             
+        else:
+            print(f'unable to fetch bright user id corresponding to {context.buid}')
+        context.data = {
+            'bright_user_id':bright_user_id[0],
+            'application_id':application_id,
+            #other field validation 
+        }
+        assert app_type_db == app_value
+        assert app_state_db == "UNKNOWN"
+        print(context.data)
+
+
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+  
     
+
+
+
 
 #For example
 @given('the payLoad details with "{buids}" for "{APIaction}"')

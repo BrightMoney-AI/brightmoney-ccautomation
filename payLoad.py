@@ -7,7 +7,7 @@ def submitAppPayLoad():
         "bm_session_id": "01c00add-2f6b-4ff5-a6b3-0f5240e7e9b9",
         "app_version": "123",
         "client_source": "akshat_local_host",
-        "bright_uid": "f86800c5-7539-4617-900c-cff52e41e2f6"
+        "bright_uid": "f86800c5-7539-4617-900c-cff52e44e2f6"
     },
     "data": {
         "product": "CREDIT_CARD_SECURED_V1",
@@ -28,7 +28,7 @@ def submitAppPayLoad():
     return body
 
 
-def varSubmitPayload(buid):
+def varSubmitPayload(buid,income):
     body = {
     "meta": {
         "bm_request_id": "01c00add-2f6b-4ff5-a6b3-0f5240e7e9b9",
@@ -45,7 +45,7 @@ def varSubmitPayload(buid):
         },
         "loan_version": "v1",
         "application_data": {
-            "income": 58000,
+            "income": income,
             "questions": {
                 "occupation": "Retired"
             }
