@@ -1,0 +1,2 @@
+git psycopg2-binary
+python-dotenv
