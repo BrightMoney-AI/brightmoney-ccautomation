@@ -1,0 +1,34 @@
+#!/bin/bash
+
+
+today=$(date "+%Y-%m-%d")
+time_till_second=$(date "+%H_%M_%S")
+temp_result_dir='temp_allure_results'
+temp_report_dir="temp_allure_report"
+
+report_dir="test_reports/${today}"
+
+echo "Cleaning Previous Temporary directories"
+rm -rf ${temp_result_dir}
+rm -rf ${temp_report_dir}
+
+echo "Creating Temporary Directories"
+mkdir ${temp_report_dir}
+mkdir -p ${report_dir}
+
+
+echo "Generating behaviour json files"
+behave --no-capture -f allure_behave.formatter:AllureFormatter -o ${temp_result_dir}
+
+echo "Generating Reports"
+allure generate --single-file ${temp_result_dir} --clean -o ${temp_report_dir}
+
+pushd $temp_report_dir
+
+    mv index.html "../${report_dir}/test_report_${time_till_second}.html"
+popd
+
+
+echo "Cleaning temp direcotries"
+rm -rf ${temp_result_dir}
+rm -rf ${temp_report_dir}
