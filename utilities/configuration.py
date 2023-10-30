@@ -1,4 +1,4 @@
-import os, configparser, json
+import os, configparser, allure
 import psycopg2
 
 env = "DEV"
@@ -11,19 +11,15 @@ def getConfig():
     else:
         raise FileNotFoundError("Config file 'utilities/properties.ini' not found or empty.")
     
-connect_config = {
-    'user' : getConfig()[env]['DB_USER'],
-    'password' : getConfig()[env]['DB_PASS'],
-    'host' : getConfig()[env]['DB_HOST'],
-    'database' :getConfig()[env]['DB_NAME'],
-}
 
-def getConnection():
-    try:
-        print(connect_config)
-        conn = psycopg2.connect(**connect_config)
-        if conn:
-            print("Connection Successful")
-            return conn
-    except Exception as e:
-        print(e)
+
+# def getConnection():
+#     try:
+#         #print(connect_config)
+#         conn = psycopg2.connect(**connect_config)
+#         if conn:
+#             with allure.step("DB Connection Successful"):
+#                 print("DB Connection Successful")
+#                 return conn
+#     except Exception as e:
+#         print(e)
