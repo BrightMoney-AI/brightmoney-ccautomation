@@ -1,7 +1,7 @@
 
-Feature: Verify Create Account Poll API
-@create
-Scenario: Verify Create API
+Feature: Verify Activate Card API
+
+Scenario: Verify Activate API
 		Given User have eligible bright uid
         And the payLoad required for "Submit" with eligible buid
         When PostAPI method is executed for "Submit"
@@ -10,7 +10,3 @@ Scenario: Verify Create API
         Given the payLoad required for "Create" with eligible buid
         When PostAPI method is executed for "Create"
         Then status code of response should be 200
-
-
-
-       
