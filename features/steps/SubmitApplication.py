@@ -5,6 +5,7 @@ from utilities.resources import *
 from utilities.dbConnection import *
 from testData.SubmitApplicationpayLoad import *
 from testData.ApplicationPollpayLoad import *
+from testData.CreateAccountpayLoad  import *
 from features.automationCode.usm import *
 from testdata import *
 import time
@@ -43,8 +44,9 @@ def step_impl(context, APIaction):
          context.buid = context.brightuid
          context.payLoad = pollAppPayLoad(context,context.buid)
     elif APIaction == "Create":
+        context.buid = context.brightuid
         context.url = getConfig()[env]['endpoint'] + ApiResources.createAccount
-        context.payLoad = createAccPayLoad()
+        context.payLoad = createAccountpayLoad(context,context.buid)
     elif APIaction == "Activate":
         context.url = getConfig()[env]['endpoint'] + ApiResources.activateCard
         context.payLoad = activateCardPayLoad()
@@ -161,6 +163,82 @@ def step_impl(context, db_name, app_value):
     finally:
         if conn is not None:
             conn.close()
+
+@then('row is created in subsequent tables in DB "{db_name}" with account_state as "{app_value}"')
+def step_impl(context, db_name, app_value):
+    data = {}
+    try :   
+        conn = getConnection(db_name)
+        cur = conn.cursor()
+        
+        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s", context.buid)
+        bright_user_id = cur.fetchone()
+        if bright_user_id != None:                      
+            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on", bright_user_id[0])
+            application_id = cur.fetchone()[0]    
+            app_type_db = cur.fetchone()[6]
+            if application_id != None:  
+                cur.execute("SELECT * FROM lsp_application WHERE application_id = %s ORDER BY modified_on", application_id)   
+                app_state_db = cur.fetchone()[5]    
+
+        else:
+            print(f'unable to fetch bright user id corresponding to {context.buid}')
+        context.data = {
+            'bright_user_id':bright_user_id[0],
+            'application_id':application_id,
+            #other field validation 
+        }
+        assert app_type_db == app_value
+        print(context.data)
+
+
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()            
+
+@then('row is created in subsequent tables in DB "{db_name}" with card_state as "{app_value}"')
+def step_impl(context, db_name, app_value):
+    data = {}
+    try :   
+        conn = getConnection(db_name)
+        cur = conn.cursor()
+        
+        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s", context.buid)
+        bright_user_id = cur.fetchone()
+        if bright_user_id != None:                      
+            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on", bright_user_id[0])
+            application_id = cur.fetchone()[0]    
+            app_type_db = cur.fetchone()[6]
+            if application_id != None:  
+                cur.execute("SELECT * FROM lsp_application WHERE application_id = %s ORDER BY modified_on", application_id)   
+                app_state_db = cur.fetchone()[5]
+                acc_id=cur.fetchone()[0]
+                if  acc_id!=None:
+                    cur.execute("SELECT * FROM lsp_card WHERE account_id = %s ORDER BY modified_on", acc_id) 
+                    card_state = cur.fetchone()[10]
+
+
+        else:
+            print(f'unable to fetch bright user id corresponding to {context.buid}')
+        context.data = {
+            'bright_user_id':bright_user_id[0],
+            'application_id':application_id,
+            #other field validation 
+        }
+        assert card_state == app_value
+        print(context.data)
+
+
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()            
+
 
 @given('User have eligible bright uid')
 def step_impl(context):
