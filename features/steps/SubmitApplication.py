@@ -3,9 +3,10 @@ from behave import *
 from utilities.configuration import *
 from utilities.resources import *
 from utilities.dbConnection import *
-from testData.SubmitApplicationpayLoad import *
+from testData.dynamicPayLoad import *
 from testData.ApplicationPollpayLoad import *
 from testData.CreateAccountpayLoad  import *
+from testData.dynamicPayLoad import *
 from features.automationCode.usm import *
 from testdata import *
 import time
@@ -61,6 +62,14 @@ def step_impl(context, APIaction):
     
     #print("POST is executed for "+APIaction)
 
+
+@when('PostAPI method is executed for "{APIaction}" with dynamic data')
+def step_impl(context, APIaction):
+    context.headers = {"Content-Type": "application/json"}
+    context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
+    context.payLoad = submitAppDynamicPayLoad(context, context.buid)
+    context.response = requests.post(context.url, json=context.payLoad , headers=context.headers, )
+    #print("POST is executed for "+APIaction)
 
 @then('status code of response should be {statusCode:d}')
 def step_impl(context, statusCode):

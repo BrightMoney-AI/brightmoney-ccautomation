@@ -66,9 +66,7 @@ def is_number_exist(context, PHONE_NUMBER):
     return False
 
 def get_bright_uid(context, PHONE_NUMBER):
-    try :   
-        #conn = getConnection()
-        #cur = conn.cursor()
+    try :       
         context.cur.execute("SELECT bright_user_id FROM bm_users_userprofile WHERE primary_phonenum = %s;",(str(PHONE_NUMBER),))
         bright_user_id = context.cur.fetchone()[0]       
         if bright_user_id != None:            
