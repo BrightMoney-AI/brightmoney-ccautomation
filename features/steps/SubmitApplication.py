@@ -4,6 +4,7 @@ from utilities.configuration import *
 from utilities.resources import *
 from utilities.dbConnection import *
 from testData.payLoad import *
+from testData.dynamicPayLoad import *
 from features.automationCode.usm import *
 
 
@@ -52,6 +53,14 @@ def step_impl(context, APIaction):
     #print("POST is executed for "+APIaction)
 
 
+@when('PostAPI method is executed for "{APIaction}" with dynamic data')
+def step_impl(context, APIaction):
+    context.headers = {"Content-Type": "application/json"}
+    context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
+    context.payLoad = submitAppDynamicPayLoad(context, context.buid)
+    context.response = requests.post(context.url, json=context.payLoad , headers=context.headers, )
+    #print("POST is executed for "+APIaction)
+
 @then('status code of response should be {statusCode:d}')
 def step_impl(context, statusCode):
     print(context.response.status_code)
@@ -96,8 +105,6 @@ def step_impl(context, db_name, app_value):
         assert app_type_db == app_value
         assert app_state_db == "UNKNOWN"
         print(context.data)
-
-
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
