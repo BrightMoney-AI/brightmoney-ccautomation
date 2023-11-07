@@ -95,31 +95,39 @@ def step_impl(context, param, actual_value):
 @then('row is created in subsequent tables in DB "{db_name}" with application_type as "{app_value}"')
 def step_impl(context, db_name, app_value):
     data = {}
-    try :   
+    conn = None
+    try:
         conn = getConnection(db_name)
         cur = conn.cursor()
-        #cur.execute("UPDATE credit_eligibilitydata SET bright_uid = %s WHERE pid = f3b68ab3-4afa-4ade-be93-b2bcd9c347c7", context.buid)
-        
-        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s", context.buid)
+
+        cur.execute("SELECT * FROM credit.lsp_user WHERE bright_uid = %s;", (str(context.buid),))
         bright_user_id = cur.fetchone()
-        if bright_user_id != None:                      
-            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on", bright_user_id[0])
-            application_id = cur.fetchone()[0]    
-            app_type_db = cur.fetchone()[6]
-            if application_id != None:  
-                cur.execute("SELECT * FROM lsp_applicationhistory WHERE application_id = %s ORDER BY modified_on", application_id)   
-                app_state_db = cur.fetchone()[4]             
+
+        if bright_user_id is not None:
+            cur.execute("SELECT * FROM credit.lsp_application WHERE user_id = %s ORDER BY modified_on;", (str(bright_user_id[0]),))
+            application_row = cur.fetchone()
+            if application_row:
+                application_id = application_row[0]
+                app_type_db = application_row[6]
+
+                cur.execute("SELECT * FROM credit.lsp_applicationhistory WHERE application_id = %s ORDER BY modified_on;", (str(application_id),))
+                app_state_db = cur.fetchone()[4]
+            else:
+                application_id = None
+                app_type_db = None
+                app_state_db = None
         else:
-            print(f'unable to fetch bright user id corresponding to {context.buid}')
-        context.data = {
-            'bright_user_id':bright_user_id[0],
-            'application_id':application_id,
-            #other field validation 
+            print(f"Unable to fetch bright user id corresponding to {context.buid}")
+
+        data = {
+            "bright_user_id": bright_user_id[0] if bright_user_id else None,
+            "application_id": application_id,
+            # Add other field validations here
         }
+
         assert app_type_db == app_value
         assert app_state_db == "UNKNOWN"
-        print(context.data)
-
+        print(data)
 
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -133,29 +141,35 @@ def step_impl(context, db_name, app_value):
 @then('row is created in subsequent tables in DB "{db_name}" with application_state as "{app_value}"')
 def step_impl(context, db_name, app_value):
     data = {}
-    try :   
+    conn = None
+    try:
         conn = getConnection(db_name)
         cur = conn.cursor()
-        
-        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s", context.buid)
-        bright_user_id = cur.fetchone()
-        if bright_user_id != None:                      
-            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on", bright_user_id[0])
-            application_id = cur.fetchone()[0]    
-            app_type_db = cur.fetchone()[6]
-            if application_id != None:  
-                cur.execute("SELECT * FROM lsp_applicationhistory WHERE application_id = %s ORDER BY modified_on", application_id)   
-                app_state_db = cur.fetchone()[5]             
-        else:
-            print(f'unable to fetch bright user id corresponding to {context.buid}')
-        context.data = {
-            'bright_user_id':bright_user_id[0],
-            'application_id':application_id,
-            #other field validation 
-        }
-        assert app_type_db == app_value
-        print(context.data)
 
+        cur.execute("SELECT * FROM credit.lsp_user WHERE bright_uid = %s;", (str(context.buid),))
+        bright_user_id = cur.fetchone()
+
+        if bright_user_id is not None:
+            cur.execute("SELECT * FROM credit.lsp_application WHERE user_id = %s ORDER BY modified_on;", (str(bright_user_id[0]),))
+            application_row = cur.fetchone()
+            if application_row:
+                application_id = application_row[0]
+                app_state = application_row[5]
+            else:
+                application_id = None
+                app_type_db = None
+                app_state_db = None
+        else:
+            print(f"Unable to fetch bright user id corresponding to {context.buid}")
+
+        data = {
+            "bright_user_id": bright_user_id[0] if bright_user_id else None,
+            "application_id": application_id,
+            # Add other field validations here
+        }
+
+        assert app_state == app_value
+        print(data)
 
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -167,77 +181,96 @@ def step_impl(context, db_name, app_value):
 @then('row is created in subsequent tables in DB "{db_name}" with account_state as "{app_value}"')
 def step_impl(context, db_name, app_value):
     data = {}
-    try :   
+    conn = None
+    try:
         conn = getConnection(db_name)
         cur = conn.cursor()
-        
-        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s", context.buid)
+
+        cur.execute("SELECT * FROM credit.lsp_user WHERE bright_uid = %s;", (str(context.buid),))
         bright_user_id = cur.fetchone()
-        if bright_user_id != None:                      
-            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on", bright_user_id[0])
-            application_id = cur.fetchone()[0]    
-            app_type_db = cur.fetchone()[6]
-            if application_id != None:  
-                cur.execute("SELECT * FROM lsp_application WHERE application_id = %s ORDER BY modified_on", application_id)   
-                app_state_db = cur.fetchone()[5]    
 
+        if bright_user_id is not None:
+            cur.execute("SELECT * FROM credit.lsp_application WHERE user_id = %s ORDER BY modified_on;", (str(bright_user_id[0]),))
+            application_row = cur.fetchone()
+
+            if application_row:
+                application_id = application_row[0]
+                cur.execute("SELECT * FROM credit.lsp_account WHERE application_id = %s ORDER BY modified_on;", (str(application_id),))
+                application_row = cur.fetchone()
+                app_state = application_row[6]
+            else:
+                application_id = None
+                app_type_db = None
+                app_state = None
         else:
-            print(f'unable to fetch bright user id corresponding to {context.buid}')
-        context.data = {
-            'bright_user_id':bright_user_id[0],
-            'application_id':application_id,
-            #other field validation 
-        }
-        assert app_type_db == app_value
-        print(context.data)
+            print(f"Unable to fetch bright user id corresponding to {context.buid}")
 
+        data = {
+            "bright_user_id": bright_user_id[0] if bright_user_id else None,
+            "application_id": application_id,
+            # Add other field validations here
+        }
+
+        assert app_state == app_value
+        print(data)
 
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
         if conn is not None:
-            conn.close()            
+            conn.close()               
 
 @then('row is created in subsequent tables in DB "{db_name}" with card_state as "{app_value}"')
 def step_impl(context, db_name, app_value):
     data = {}
-    try :   
+    conn = None
+    try:
         conn = getConnection(db_name)
         cur = conn.cursor()
-        
-        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s", context.buid)
+
+        cur.execute("SELECT * FROM credit.lsp_user WHERE bright_uid = %s;", (str(context.buid),))
         bright_user_id = cur.fetchone()
-        if bright_user_id != None:                      
-            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on", bright_user_id[0])
-            application_id = cur.fetchone()[0]    
-            app_type_db = cur.fetchone()[6]
-            if application_id != None:  
-                cur.execute("SELECT * FROM lsp_application WHERE application_id = %s ORDER BY modified_on", application_id)   
-                app_state_db = cur.fetchone()[5]
-                acc_id=cur.fetchone()[0]
-                if  acc_id!=None:
-                    cur.execute("SELECT * FROM lsp_card WHERE account_id = %s ORDER BY modified_on", acc_id) 
-                    card_state = cur.fetchone()[10]
 
+        if bright_user_id is not None:
+            cur.execute("SELECT * FROM credit.lsp_application WHERE user_id = %s ORDER BY modified_on;", (str(bright_user_id[0]),))
+            application_row = cur.fetchone()
 
+            if application_row:
+                application_id = application_row[0]
+                app_type_db = application_row[6]
+
+                cur.execute("SELECT * FROM credit.lsp_account WHERE application_id = %s ORDER BY modified_on;", (str(application_id),))
+                acc_id = cur.fetchone()[0]
+                if acc_id is not None:
+                    cur.execute("SELECT * FROM credit.lsp_card WHERE account_id = %s ORDER BY modified_on;", (str(acc_id),))
+                    card_row = cur.fetchone()
+                    card_state = card_row[10]
+                else:
+                    card_state = None
+            else:
+                application_id = None
+                app_type_db = None
+                app_state_db = None
+                card_state = None
         else:
-            print(f'unable to fetch bright user id corresponding to {context.buid}')
-        context.data = {
-            'bright_user_id':bright_user_id[0],
-            'application_id':application_id,
-            #other field validation 
-        }
-        assert card_state == app_value
-        print(context.data)
+            print(f"Unable to fetch bright user id corresponding to {context.buid}")
 
+        data = {
+            "bright_user_id": bright_user_id[0] if bright_user_id else None,
+            "application_id": application_id,
+            # Add other field validations here
+        }
+
+        assert card_state == app_value
+        print(data)
 
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
         if conn is not None:
-            conn.close()            
+            conn.close()           
 
 
 @given('User have eligible bright uid')
@@ -267,14 +300,15 @@ def step_impl(context, app_value):
     try :
         conn = getConnection()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM lsp_user WHERE bright_uid = %s;",(context.buid,))
+        cur.execute("SELECT * FROM credit.lsp_user WHERE bright_uid = %s;", (str(context.buid),))
+
         bright_user_id = cur.fetchone()
         if bright_user_id != None:
-            cur.execute("SELECT * FROM lsp_application WHERE user_id = %s ORDER BY modified_on",(bright_user_id[0],))
+            cur.execute("SELECT * FROM credit.lsp_application WHERE user_id = %s ORDER BY modified_on;",(str(bright_user_id[0]),))
             application_id = cur.fetchone()[0]
             app_type_db = cur.fetchone()[6]
             if application_id != None:
-                cur.execute("SELECT * FROM lsp_applicationhistory WHERE application_id = %s ORDER BY created_on",(application_id),)
+                cur.execute("SELECT * FROM credit.lsp_applicationhistory WHERE application_id = %s ORDER BY created_on;",(str(application_id),))
                 app_state_db = cur.fetchone()[4]
         else:
             print(f'unable to fetch bright user id corresponding to {context.buid}')
