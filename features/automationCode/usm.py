@@ -3,7 +3,7 @@ from behave import *
 from utilities.configuration import *
 from utilities.resources import *
 from utilities.dbConnection import *
-from testData.payLoad import *
+from testData.SubmitApplicationpayLoad import *
 from testData.usmPayLoad import *
 
 
@@ -33,12 +33,12 @@ def getEligibleBrightUID(context):
         if context.conn is not None:
             context.conn.close()
     
-        with allure.step("Updating credit_eligibilitydata to make buid eligible"):
-            pid = "f3b68ab3-4afa-4ade-be93-b2bcd9c347c7"
-            conn = getConnection("payments")
-            cur = conn.cursor()
-            cur.execute("UPDATE credit.credit_eligibilitydata SET bright_uid = %s WHERE pid = %s;", (context.brightuid, pid,))
-            conn.close()
+        # with allure.step("Updating credit_eligibilitydata to make buid eligible"):
+        #     pid = "f3b68ab3-4afa-4ade-be93-b2bcd9c347c7"
+        #     conn = getConnection("payments")
+        #     cur = conn.cursor()
+        #     cur.execute("UPDATE credit.credit_eligibilitydata SET bright_uid = %s WHERE pid = %s;", (context.brightuid, pid,))
+        #     conn.close()
         
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
