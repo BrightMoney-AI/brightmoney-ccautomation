@@ -2,3 +2,8 @@ __paycache__
 .DS_store
 venv
 test_reports
+utilities/__pycache__
+features/__pycache__
+testData/__pycache__
+automationCode/__pycache__
+utilities/__pycache__/__init__.cpython-312.pyc
