@@ -20,3 +20,4 @@ Scenario: Verify Create API
     Then row is created in subsequent tables in DB "payments" with account_state as "CREATED_IN_PROCESSOR"
     Then row is created in subsequent tables in DB "payments" with card_state as "DEPOSIT_IN_PROGRESS"
 
+

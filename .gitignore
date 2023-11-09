@@ -2,3 +2,4 @@ __paycache__
 .DS_store
 venv
 test_reports
+AllCases.feature
