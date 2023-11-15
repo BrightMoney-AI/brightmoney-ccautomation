@@ -6,6 +6,7 @@ from utilities.dbConnection import *
 from testData.SubmitApplicationpayLoad import *
 from testData.ApplicationPollpayLoad import *
 from testData.CreateAccountpayLoad  import *
+from testData.TransactionSubmitpayLoad  import *
 from features.automationCode.usm import *
 from testdata import *
 import time
@@ -28,7 +29,10 @@ def step_impl(context,APIaction,test_data):
         context.payLoad = activateCardPayLoad()
     elif APIaction == "Block":
         context.url = getConfig()[env]['endpoint'] + ApiResources.blockCard  
-        context.payLoad = blockCardPayLoad()     
+        context.payLoad = blockCardPayLoad()
+    elif APIaction == "Transactions":
+        context.url = getConfig()[env]['endpoint'] + ApiResources.transactionSubmit  
+        context.payLoad = transactionSubmitPayLoad()            
 
 
 @given('the payLoad required for "{APIaction}" with eligible buid')
@@ -53,7 +57,9 @@ def step_impl(context, APIaction):
     elif APIaction == "Block":
         context.url = getConfig()[env]['endpoint'] + ApiResources.blockCard  
         context.payLoad = blockCardPayLoad()  
-
+    elif APIaction == "Transactions":
+        context.url = getConfig()[env]['endpoint'] + ApiResources.transactionSubmit  
+        context.payLoad = transactionSubmitPayLoad()
 
 @when('PostAPI method is executed for "{APIaction}"')
 def step_impl(context, APIaction):
