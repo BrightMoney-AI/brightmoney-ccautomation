@@ -8,7 +8,6 @@ from testData.usmPayLoad import *
 
 
 
-#for steps
 def getEligibleBrightUID(context):
     try:
         phone_num = "+19876543210"
@@ -19,29 +18,18 @@ def getEligibleBrightUID(context):
         
         usmurl = "https://gateway-dev.brightmoney.co/api/v1/users/usm/signin/"
         usmheaders = {"Content-Type": "application/json"}
-        with allure.step("Adding Phone Number"):
-            print("Phone Num:" + phone_num)
-            context.usmresponse = requests.post(usmurl, json = usm_SigninPayLoad(phone_num) , headers = usmheaders, )
-        print("USM Response code: "+ str(context.usmresponse.status_code))
+        add_allure_step("Adding Phone Number: " + str(phone_num))
+        context.usmresponse = requests.post(usmurl, json = usm_SigninPayLoad(phone_num) , headers = usmheaders, )
+        add_allure_step("USM Response code: "+ str(context.usmresponse.status_code))
         if context.usmresponse.status_code == 200:
             context.brightuid = get_bright_uid(context, phone_num)
-            print("Bright uid got through Phone Number: " + context.brightuid)
+            add_allure_step("Bright uid got through Phone Number: " + str(context.brightuid))
         else:
-            with allure.step("Get bright uid from USM"):
-                allure.attach("USM endpoint returns: "+ str(context.usmresponse.status_code) + ", Not 200", allure.attachment_type.TEXT)
-        
+            allure.attach("USM endpoint returns: "+ str(context.usmresponse.status_code) + ", Not 200", allure.attachment_type.TEXT)
         if context.conn is not None:
-            context.conn.close()
-    
-        # with allure.step("Updating credit_eligibilitydata to make buid eligible"):
-        #     pid = "f3b68ab3-4afa-4ade-be93-b2bcd9c347c7"
-        #     conn = getConnection("payments")
-        #     cur = conn.cursor()
-        #     cur.execute("UPDATE credit.credit_eligibilitydata SET bright_uid = %s WHERE pid = %s;", (context.brightuid, pid,))
-        #     conn.close()
-        
+            context.conn.close()       
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(str(error))
     finally:
         if context.conn is not None:
             context.conn.close()
@@ -52,37 +40,26 @@ def is_number_exist(context, PHONE_NUMBER):
     try :         
         context.cur.execute("SELECT bright_user_id FROM bm_users_userprofile WHERE primary_phonenum = %s;",(str(PHONE_NUMBER),))
         bright_user_id = context.cur.fetchone() 
-        print("Bright user id is  = ",bright_user_id)
+        add_allure_step("Bright user id is  = " + str(bright_user_id))
         if bright_user_id != None:            
             return True                
         else:
             return False       
-        #cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    # finally:
-    #     if conn is not None:
-    #         conn.close()
+        add_allure_step(str(error))
     return False
 
 def get_bright_uid(context, PHONE_NUMBER):
     try :   
-        #conn = getConnection()
-        #cur = conn.cursor()
         context.cur.execute("SELECT bright_user_id FROM bm_users_userprofile WHERE primary_phonenum = %s;",(str(PHONE_NUMBER),))
         bright_user_id = context.cur.fetchone()[0]       
         if bright_user_id != None:            
             context.cur.execute("SELECT bright_uid FROM bm_users_brightuser WHERE id =%s;",(str(bright_user_id),))          
             bright_uid = context.cur.fetchone()[0]
-            print(type(bright_uid))
             return bright_uid
         else:
-            return False       
-        
+            return False               
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    # finally:
-    #     if conn is not None:
-    #         conn.close()
+        add_allure_step(str(error))
     return False
 

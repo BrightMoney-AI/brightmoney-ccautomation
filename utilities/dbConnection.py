@@ -18,11 +18,9 @@ def create_connection_config(dynamic_db_name):
 def getConnection(dynamic_db_name):
     try:
         connect_config = create_connection_config(dynamic_db_name)
-        print(connect_config)
         conn = psycopg2.connect(**connect_config)
         if conn:
             with allure.step("DB Connection Successful"):
-                print("DB Connection Successful")
                 return conn
     except Exception as e:
-        print(e)
+        add_allure_step(str(e))

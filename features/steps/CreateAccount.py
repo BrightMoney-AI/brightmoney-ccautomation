@@ -9,7 +9,6 @@ from testData.ApplicationPollpayLoad import *
 from testData.CreateAccountpayLoad  import *
 from features.automationCode.usm import *
 from testdata import *
-import time
 
 
 
@@ -35,6 +34,7 @@ def step_impl_payload_with_complete_data(context):
     context.url = getConfig()[env]['endpoint'] + ApiResources.createAccount
     context.buid = context.brightuid
     context.payLoad = createpayLoadWithEmptyBuid(context, context.buid) 
+
 
 @given('the payload req with empty meta data with rest same')
 def step_impl_payload_with_complete_data(context):

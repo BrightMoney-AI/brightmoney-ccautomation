@@ -17,7 +17,7 @@ Scenario: Verify Happy Flow
     Then row is created in subsequent tables in DB "payments" with card_state as "DEPOSIT_IN_PROGRESS"
 
 
-Scenario: Verify With High Income
+Scenario: Verify Happy Flow With High Income
     Given User have eligible bright uid
     And the payload req for "Submit" application with a large income value
     When PostAPI method is executed for "Submit"

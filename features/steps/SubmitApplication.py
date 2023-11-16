@@ -1,4 +1,4 @@
-import requests, psycopg2, random
+import requests, psycopg2, pdb
 from behave import *
 from utilities.configuration import *
 from utilities.resources import *
@@ -18,8 +18,8 @@ def step_impl(context,APIaction,test_data):
 
     if APIaction == "Submit":
         context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
-        context.buid = generate_test_data_from_excel()[test_data][0]['buid']
-        print(context.buid)
+        #context.buid = generate_test_data_from_excel()[test_data][0]['buid']
+        #print("BUID from excel: "+context.buid)
         context.payLoad = submitAppPayLoad(context, context.buid)     
     elif APIaction == "Create":
         context.url = getConfig()[env]['endpoint'] + ApiResources.createAccount
@@ -61,45 +61,42 @@ def step_impl(context, APIaction):
         context.url = getConfig()[env]['endpoint'] + ApiResources.transactionSubmit  
         context.payLoad = transactionSubmitPayLoad()
 
+
 @when('PostAPI method is executed for "{APIaction}"')
 def step_impl(context, APIaction):
     context.response = requests.post(context.url, json=context.payLoad , headers=context.headers, )
-    
-    #print("POST is executed for "+APIaction)
 
 
 @then('status code of response should be {statusCode:d}')
 def step_impl(context, statusCode):
-    print(context.response.status_code)
-    assert context.response.status_code == statusCode
+    assert context.response.status_code == statusCode, f"Assertion failed: Actual:{context.response.status_code} ::: Expected:{statusCode}"
 
 
 @then('response is having "{param}" as "{actual_value}"')
 def step_impl(context, param, actual_value):
     response_json = context.response.json()
-    print(response_json)
     context.submit_buid = response_json['meta']['bright_uid']
-    print("Bright uid from response of Submit Application: " + context.submit_buid)
+    add_allure_step("Bright UID from response of Submit Application: " + str(context.submit_buid))
     expected_value = response_json['data']['application'][param]
-    context.pid = response_json['data']['application']['pid']
-    print(context.pid + " pid")
+    context.pid = response_json['data']['application']['pid'] 
+    add_allure_step("PID:"+ str(context.pid))
     assert expected_value == actual_value, f"Assertion failed: {expected_value} != {actual_value}"
 
 @then('Poll response is having "{param}" as "{actual_value}"')
 def step_impl(context, param, actual_value):
     time.sleep(60)
     response_json = context.response.json()
-    print(response_json)
     context.poll_buid = response_json['meta']['bright_uid']
-    print("Bright uid from response of Poll Application: " + context.poll_buid)
+    add_allure_step("Bright uid from response of Poll Application: " + str(context.poll_buid))
     expected_value = response_json['data']['application'][param]
     context.pid = response_json['data']['application']['pid']
-    print(context.pid + " pid")
+    add_allure_step("PID: "+ str(context.pid))
     assert expected_value == actual_value, f"Assertion failed: {expected_value} != {actual_value}"    
 
 
 @then('row is created in subsequent tables in DB "{db_name}" with application_type as "{app_value}"')
 def step_impl(context, db_name, app_value):
+    #pdb.set_trace()
     data = {}
     conn = None
     try:
@@ -123,7 +120,7 @@ def step_impl(context, db_name, app_value):
                 app_type_db = None
                 app_state_db = None
         else:
-            print(f"Unable to fetch bright user id corresponding to {context.buid}")
+            add_allure_step("Unable to fetch bright user id corresponding to" + str(context.buid))
 
         data = {
             "bright_user_id": bright_user_id[0] if bright_user_id else None,
@@ -133,11 +130,9 @@ def step_impl(context, db_name, app_value):
 
         assert app_type_db == app_value
         assert app_state_db == "UNKNOWN"
-        print(data)
-
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(str(error))
     finally:
         if conn is not None:
             conn.close()
@@ -166,7 +161,7 @@ def step_impl(context, db_name, app_value):
                 app_type_db = None
                 app_state_db = None
         else:
-            print(f"Unable to fetch bright user id corresponding to {context.buid}")
+            add_allure_step("Unable to fetch bright user id corresponding to "+ str(context.buid))
 
         data = {
             "bright_user_id": bright_user_id[0] if bright_user_id else None,
@@ -175,14 +170,13 @@ def step_impl(context, db_name, app_value):
         }
 
         assert app_state == app_value
-        print(data)
-
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(str(error))
     finally:
         if conn is not None:
             conn.close()
+
 
 @then('row is created in subsequent tables in DB "{db_name}" with account_state as "{app_value}"')
 def step_impl(context, db_name, app_value):
@@ -209,7 +203,7 @@ def step_impl(context, db_name, app_value):
                 app_type_db = None
                 app_state = None
         else:
-            print(f"Unable to fetch bright user id corresponding to {context.buid}")
+            add_allure_step(f"Unable to fetch bright user id corresponding to {context.buid}")
 
         data = {
             "bright_user_id": bright_user_id[0] if bright_user_id else None,
@@ -218,14 +212,13 @@ def step_impl(context, db_name, app_value):
         }
 
         assert app_state == app_value
-        print(data)
-
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(error)
     finally:
         if conn is not None:
             conn.close()               
+
 
 @then('row is created in subsequent tables in DB "{db_name}" with card_state as "{app_value}"')
 def step_impl(context, db_name, app_value):
@@ -260,7 +253,7 @@ def step_impl(context, db_name, app_value):
                 app_state_db = None
                 card_state = None
         else:
-            print(f"Unable to fetch bright user id corresponding to {context.buid}")
+            add_allure_step(f"Unable to fetch bright user id corresponding to {context.buid}")
 
         data = {
             "bright_user_id": bright_user_id[0] if bright_user_id else None,
@@ -269,11 +262,9 @@ def step_impl(context, db_name, app_value):
         }
 
         assert card_state == app_value
-        print(data)
-
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(error)
     finally:
         if conn is not None:
             conn.close()           
@@ -282,22 +273,6 @@ def step_impl(context, db_name, app_value):
 @given('User have eligible bright uid')
 def step_impl(context):
     getEligibleBrightUID(context)
-
-
-
-
-
-
-
-# @then('response is having "{param}" as "{value}"')
-# def step_impl(context, param, value):
-#     #assert context.response == submitResponse()
-#     #print(context.response.json())
-#     response_json = context.response.json()
-#     print("Print")
-#     context.buid = response_json['meta']['bright_uid']
-#     print(context.buid)
-#     assert response_json['data'][param] == value
 
 
 @then('row is created in subsequent tables with application_type as "{app_value}"')
@@ -317,7 +292,7 @@ def step_impl(context, app_value):
                 cur.execute("SELECT * FROM credit.lsp_applicationhistory WHERE application_id = %s ORDER BY created_on;",(str(application_id),))
                 app_state_db = cur.fetchone()[4]
         else:
-            print(f'unable to fetch bright user id corresponding to {context.buid}')
+            add_allure_step(f'unable to fetch bright user id corresponding to {context.buid}')
         context.data = {
             'bright_user_id':bright_user_id[0],
             'application_id':application_id,
@@ -325,20 +300,12 @@ def step_impl(context, app_value):
         }
         assert app_type_db == app_value
         assert app_state_db == "UNKNOWN"
-        print(context.data)
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(error)
     finally:
         if conn is not None:
             conn.close()
-#For example
-# @given('the payLoad details with "{buids}" for "{APIaction}"')
-# def step_impl(context,buid,APIact):
-#     context.url = getConfig()['API']['endpoint'] + ApiResources.submitApplication
-#     context.headers = {"Content-Type": "application/json"}
-#     for buid in ApiResources.buids:
-#         context.payLoad = varSubmitPayload(buid, APIact)
 
         
 @given('get_user_profile with "{PHONE_NUMBER}"')
@@ -353,44 +320,24 @@ def get_user_profile(context,PHONE_NUMBER):
             cur.execute("SELECT id FROM bm_users_userstate WHERE user_id = %s;",(bright_user_id[0],))
             user_state_id = cur.fetchone()[0]
         else:
-            print(f'unable to find bright user id corresponding to {PHONE_NUMBER}')
+            add_allure_step(f'unable to find bright user id corresponding to {PHONE_NUMBER}')
         context.data = {
             'bright_user_id':bright_user_id[0],
             'user_state_id':user_state_id
         }
-        print(context.data)
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        add_allure_step(error)
     finally:
         if conn is not None:
             conn.close()
     return context.data
 
+
 @then('response is "{data}"')
 def step_impl(context,data):
-    print(context.data)
+    add_allure_step("User State ID" + context.data.get('user_state_id'))
     assert context.data.get('user_state_id') == data
-
-@given('Eligible bright uid')
-def step_impl(context):
-    phone_num = "+19876543210"
-    context.conn = getConnection("usm")
-    context.cur = context.conn.cursor()
-    while(is_number_exist(context , phone_num)):
-            phone_num = '+1' + str(random.randint(200, 999)) + str(random.randint(100, 999)) + str(random.randint(1000, 9999))
-    usmurl = "https://gateway-dev.brightmoney.co/api/v1/users/usm/signin/"
-    usmheaders = {"Content-Type": "application/json"}
-  
-    context.response = requests.post(usmurl, json=usm_SigninPayLoad(phone_num) , headers=usmheaders)
-# @given('the payload req for "{apiAction}" application')
-
-
-
-@when('Post API is sent')
-def step_impl(context, apiAction):
-    pass
-
 
 
 @given('the payload req for "{Submit}" with a missing required field')
@@ -401,14 +348,13 @@ def step_impl_payload_with_complete_data(context,Submit):
     context.payLoad = submitAppMissingPayLoad(context, context.buid)   
 
 
-
-
 @given('the payload req for "{Submit}" application with an Missing loan version')
 def step_impl_payload_with_incorrect_data(context,Submit):
     context.headers = {"Content-Type": "application/json"}
     context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
     context.buid = context.brightuid
     context.payLoad = submitAppIncorrectLoanVersionPayLoad(context, context.buid)   
+
 
 @given('the payload req for "{Submit}" application with a large income value')
 def step_impl_payload_with_large_data(context,Submit):
@@ -417,12 +363,14 @@ def step_impl_payload_with_large_data(context,Submit):
     context.buid = context.brightuid
     context.payLoad = submitAppPayLoadWithLargeIncome(context, context.buid)         
 
+
 @given('the payload req for "{Submit}" application with missing meta information')
 def step_impl_payload_with_missing_meta_data(context,Submit):
     context.headers = {"Content-Type": "application/json"}
     context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
     context.buid = context.brightuid
     context.payLoad = submitAppPayLoadWithMissingMeta(context, context.buid)  
+
 
 @given('the payload req for "{Submit}" application with missing application data')
 def step_impl_payload_with_missing_meta_data(context,Submit):
@@ -439,6 +387,7 @@ def step_impl_payload_with_missing_meta_data(context,Submit):
     context.buid = context.brightuid
     context.payLoad = submitAppPayLoadWithnullApplicationData(context, context.buid)  
 
+
 @given('the payload req for "{Submit}" application with empty auth signals')
 def step_impl_payload_with_missing_auth_data(context,Submit):
     context.headers = {"Content-Type": "application/json"}
@@ -453,6 +402,7 @@ def step_impl_payload_with_large_data(context,Submit):
     context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
     context.buid = context.brightuid
     context.payLoad = submitAppPayLoadWithLargeIncome(context, context.buid)  
+
 
 @given('the payload req for "{Submit}" application with an invalid product')
 def step_impl_payload_with_large_data(context,Submit):
@@ -469,6 +419,7 @@ def step_impl_payload_with_large_data(context,Submit):
     context.buid = context.brightuid
     context.payLoad = submitAppPayLoadWithMissingIncome(context, context.buid)   
 
+
 @given('the payload req for "{Submit}" application with null loan version')
 def step_impl_payload_with_large_data(context,Submit):
     context.headers = {"Content-Type": "application/json"}
@@ -476,9 +427,6 @@ def step_impl_payload_with_large_data(context,Submit):
     context.buid = context.brightuid
     context.payLoad = submitAppPayLoadWithNullLoanVersion(context, context.buid)   
 
-@then('the response status code should be 200')
-def step_impl_check_response_status_200(context):
-    assert context.response.status_code == 200
 
 
 @then('the application state transitions from UNKNOWN to APPLICATION_RECEIVED to UNDERWRITING_IN_PROGRESS to APPROVED/DECLINED/REFERRED')
@@ -487,12 +435,6 @@ def step_impl_check_application_state_transitions(context):
     application_state = response_data['data']['application']['state']
     expected_states = ['UNKNOWN', 'APPLICATION_RECEIVED', 'UNDERWRITING_IN_PROGRESS', 'APPROVED', 'DECLINED', 'REFERRED']
     assert all(state in application_state for state in expected_states)
-
-
-@then('the response status code should be 400')
-def step_impl_check_response_status_400(context):
-    assert context.response.status_code == 400
-
 
 
 @then('the application state transitions from APPLICATION_RECEIVED to UNDERWRITING_IN_PROGRESS')
