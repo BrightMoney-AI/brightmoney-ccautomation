@@ -1,5 +1,6 @@
-
 Feature: Verify Create Account Poll API
+
+
 Scenario: Verify Create API
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
@@ -16,6 +17,7 @@ Scenario: Verify Create API
     Then row is created in subsequent tables in DB "payments" with account_state as "CREATED_IN_PROCESSOR"
     Then row is created in subsequent tables in DB "payments" with card_state as "DEPOSIT_IN_PROGRESS"
 
+@negative
 Scenario: Verify Create API with empty pid
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
@@ -30,6 +32,7 @@ Scenario: Verify Create API with empty pid
     When PostAPI method is executed for "Create"
     Then status code of response should be 400
 
+@negative
 Scenario: Verify Create API with empty auth signal
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
@@ -44,6 +47,7 @@ Scenario: Verify Create API with empty auth signal
     When PostAPI method is executed for "Create"
     Then status code of response should be 400 
 
+@negative
 Scenario: Verify Create API with empty bright uid 
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
@@ -58,7 +62,7 @@ Scenario: Verify Create API with empty bright uid
     When PostAPI method is executed for "Create"
     Then status code of response should be 400
 
-
+@negative
 Scenario: Verify Create API with empty meta 
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
@@ -71,9 +75,4 @@ Scenario: Verify Create API with empty meta
     And row is created in subsequent tables in DB "payments" with application_state as "WAITING_ON_USER_RESPONSE_ON_AGREEMENT"
     Given the payload req with empty meta data with rest same
     When PostAPI method is executed for "Create"
-    Then status code of response should be 400    
-    
-
-
-
-       
+    Then status code of response should be 400            

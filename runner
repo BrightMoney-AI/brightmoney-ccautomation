@@ -18,8 +18,8 @@ mkdir -p ${report_dir}
 
 
 echo "Generating behaviour json files"
-# behave --no-capture -f allure_behave.formatter:AllureFormatter -o ${temp_result_dir}
-behave features/CreateAccount.feature --no-capture -f allure_behave.formatter:AllureFormatter -o ${temp_result_dir}
+# behave -s --no-capture --tags=test -f allure_behave.formatter:AllureFormatter -o ${temp_result_dir}
+behave features/SubmitApplication.feature --no-capture -f allure_behave.formatter:AllureFormatter -o ${temp_result_dir}
 
 echo "Generating Reports"
 allure generate --single-file ${temp_result_dir} --clean -o ${temp_report_dir}

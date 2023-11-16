@@ -11,15 +11,6 @@ def getConfig():
     else:
         raise FileNotFoundError("Config file 'utilities/properties.ini' not found or empty.")
     
-
-
-# def getConnection():
-#     try:
-#         #print(connect_config)
-#         conn = psycopg2.connect(**connect_config)
-#         if conn:
-#             with allure.step("DB Connection Successful"):
-#                 print("DB Connection Successful")
-#                 return conn
-#     except Exception as e:
-#         print(e)
+def add_allure_step(description):
+    with allure.step(description):
+        pass
