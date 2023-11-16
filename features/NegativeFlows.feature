@@ -8,7 +8,7 @@ Scenario: Verify Submit API
     And response is having "application_state" as "UNDERWRITING_IN_PROGRESS"
     And row is created in subsequent tables in DB "payments" with application_type as "CREDIT_CARD_SECURED_APPLICATION_V1"
 
-Scenario: Verify Submit API
+Scenario: Verify Submit API with wrong type
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
     When PostAPI method is executed for "Submit"
@@ -99,7 +99,7 @@ Scenario: Verify Poll API With Empty Meta Data
     When PostAPI method is executed for "Poll" 
     Then status code of response should be 400
 
-Scenario: Verify Create API with empty pid
+Scenario: Verify Create API with empty pid 
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
     When PostAPI method is executed for "Submit"
@@ -114,7 +114,7 @@ Scenario: Verify Create API with empty pid
     Then status code of response should be 400
 
 
-Scenario: Verify Create API with empty pid
+Scenario: Verify Create API with empty pid with wrong state
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
     When PostAPI method is executed for "Submit"
@@ -130,7 +130,7 @@ Scenario: Verify Create API with empty pid
     Then status code of response should be 400
 
 
-Scenario: Verify Create API with empty pid
+Scenario: Verify Create API with empty pid with wrong app type
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
     When PostAPI method is executed for "Submit"
@@ -146,7 +146,7 @@ Scenario: Verify Create API with empty pid
     Then status code of response should be 400
 
 
-Scenario: Verify Create API with empty pid
+Scenario: Verify Create API with empty pid with wrong state another
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
     When PostAPI method is executed for "Submit"
