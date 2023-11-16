@@ -1,6 +1,5 @@
 Feature: Verify Application Poll API
 
-@pollone
 Scenario: Verify Poll API
 		Given User have eligible bright uid
         And the payLoad required for "Submit" with eligible buid

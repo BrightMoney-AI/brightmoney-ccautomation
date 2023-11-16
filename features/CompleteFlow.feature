@@ -1,6 +1,5 @@
 Feature: Verify All LSP API's
 
-@happyFlow
 Scenario: Verify Happy Flow
     Given User have eligible bright uid
     And the payLoad required for "Submit" with eligible buid
