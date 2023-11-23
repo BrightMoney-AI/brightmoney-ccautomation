@@ -60,6 +60,9 @@ def step_impl(context, APIaction):
     elif APIaction == "Transactions":
         context.url = getConfig()[env]['endpoint'] + ApiResources.transactionSubmit  
         context.payLoad = transactionSubmitPayLoad()
+    elif APIaction == "Deposit":
+        context.url = getConfig()[env]['endpoint'] + ApiResources.securityDeposit  
+        context.payLoad = securityDepositPayload()    
 
 
 @when('PostAPI method is executed for "{APIaction}"')
