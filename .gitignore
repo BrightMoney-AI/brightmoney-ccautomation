@@ -2,3 +2,7 @@ __paycache__
 .DS_store
 venv
 test_reports
+AllCases.feature
+features/__pycache__
+testData/__pycache__
+utilities/__pycache__

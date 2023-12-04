@@ -26,6 +26,13 @@ def submitAppPayLoad(context, buid):
     }
     return body
 
+
+# Be(Payload ,payload)
+# function(params,parmas)
+# return response
+# FE show/accept
+
+
 def submitAppMissingPayLoad(context, buid):
     body = {
         "meta": {
@@ -358,3 +365,27 @@ def blockCardPayLoad(context,buid):
         
     }
     return body
+
+
+
+def transactionSubmitPayLoad(context,buid):
+    body = {
+
+        "meta": {
+        "bm_session_id": "c0f8e120-911f-4c3c-8793-85641070851c",
+        "bm_request_id": "033e22ff-1ae0-47ef-a68e-465d1d888241",
+        "client_source": "bci_fe"
+        },
+    "data": {
+            "bright_uid": "d1f8e220-911f-4c3c-8793-85641171850d",
+            "account_pid": "799d112e-205a-41c8-82f4-409b1f5bfe5f",
+            "external_reference_id":"799d112e-205a-41c8-82f4-409b1f5bfe5f",
+            "transaction_type":"PAYMENT",
+            "pull_accounts": {
+            "CHECKING_ACCOUNT_PID": 1
+        }
+            }
+        
+    }
+    return body
+
