@@ -8,31 +8,21 @@ from testData.usmPayLoad import *
 
 
 
+
 def getEligibleBrightUID(context):
     try:
-        phone_num = "+19876543210"
-        context.conn = getConnection("usm")
-        context.cur = context.conn.cursor()
-        while(is_number_exist(context, phone_num)):
-                phone_num = '+1' + str(random.randint(200, 999)) + str(random.randint(100, 999)) + str(random.randint(1000, 9999))
-        
-        usmurl = "https://gateway-dev.brightmoney.co/api/v1/users/usm/signin/"
-        usmheaders = {"Content-Type": "application/json"}
-        add_allure_step("Adding Phone Number: " + str(phone_num))
-        context.usmresponse = requests.post(usmurl, json = usm_SigninPayLoad(phone_num) , headers = usmheaders, )
-        add_allure_step("USM Response code: "+ str(context.usmresponse.status_code))
-        if context.usmresponse.status_code == 200:
-            context.brightuid = get_bright_uid(context, phone_num)
-            add_allure_step("Bright uid got through Phone Number: " + str(context.brightuid))
-        else:
-            allure.attach("USM endpoint returns: "+ str(context.usmresponse.status_code) + ", Not 200", allure.attachment_type.TEXT)
-        if context.conn is not None:
-            context.conn.close()       
+        conn = getConnection("test")
+        cur = conn.cursor()
+        query = 'SELECT * FROM "Usm_Automation" ORDER BY "created_at" DESC LIMIT 50'
+        # cur.execute("SELECT BrightUid FROM Usm_Automation WHERE BrightUid = '68fa7bfa-1b4b-4fdb-8b7d-3d5fd2944e98' ORDER BY created_at DESC LIMIT 1;")
+        cur.execute(query)
+        context.brightuid  = cur.fetchone()[1]
+        print("Bright uid got through USM: " + str(context.brightuid))
+        add_allure_step("Bright uid got through Phone Number: " + str(context.brightuid))    
+        conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        add_allure_step(str(error))
-    finally:
-        if context.conn is not None:
-            context.conn.close()
+        print("Error" + error)
+        add_allure_step(str(error))   
     
 
 #for definition

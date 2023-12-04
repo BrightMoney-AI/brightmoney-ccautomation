@@ -15,6 +15,9 @@ Scenario: Verify Happy Flow
     Then status code of response should be 200
     Then row is created in subsequent tables in DB "payments" with account_state as "CREATED_IN_PROCESSOR"
     Then row is created in subsequent tables in DB "payments" with card_state as "DEPOSIT_IN_PROGRESS"
+    Given the payLoad required for "Deposit" with eligible buid
+    When PostAPI method is executed for "Deposit"
+    Then status code of response should be 200
 
 
 Scenario: Verify Happy Flow With High Income

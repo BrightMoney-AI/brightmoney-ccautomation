@@ -7,6 +7,7 @@ from testData.SubmitApplicationpayLoad import *
 from testData.ApplicationPollpayLoad import *
 from testData.CreateAccountpayLoad  import *
 from testData.TransactionSubmitpayLoad  import *
+from testData.SecurityDepositpayLoad  import *
 from features.automationCode.usm import *
 from testdata import *
 import time
@@ -40,9 +41,25 @@ def step_impl(context, APIaction):
     context.headers = {"Content-Type": "application/json"}
 
     if APIaction == "Submit":
-        context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
-        context.buid = context.brightuid
-        context.payLoad = submitAppPayLoad(context, context.buid)  
+        try:
+            conn = getConnection('usm')
+            cur = conn.cursor()
+            context.buid = context.brightuid
+            cur.execute("SELECT * FROM  bm_users_brightuser WHERE bright_uid = %s;", (str(context.buid),))
+            bright_user_id = cur.fetchone()[0]
+            if bright_user_id is not None:
+              conn2 = getConnection('usm')  
+              cur2 = conn2.cursor()
+              cur2.execute("UPDATE bm_users_userprofile SET is_kyc_verified ='t' WHERE bright_user_id = %s;" ,(str(bright_user_id),))
+            else:
+                add_allure_step("Unable to fetch bright user id corresponding to" + str(context.buid))      
+            context.url = getConfig()[env]['endpoint'] + ApiResources.submitApplication
+            context.payLoad = submitAppPayLoad(context, context.buid)  
+        except (Exception, psycopg2.DatabaseError) as error:
+                add_allure_step(str(error))
+        finally:
+            if conn is not None:
+                conn.close()   
     elif APIaction=="Poll":
          context.url = getConfig()[env]['endpoint'] + ApiResources.pollApplication
          context.buid = context.brightuid
@@ -61,8 +78,32 @@ def step_impl(context, APIaction):
         context.url = getConfig()[env]['endpoint'] + ApiResources.transactionSubmit  
         context.payLoad = transactionSubmitPayLoad()
     elif APIaction == "Deposit":
-        context.url = getConfig()[env]['endpoint'] + ApiResources.securityDeposit  
-        context.payLoad = securityDepositPayload()    
+        try:
+            conn = getConnection('payments')
+            cur = conn.cursor()
+
+            cur.execute("SELECT * FROM credit.lsp_user WHERE bright_uid = %s;", (str(context.buid),))
+            bright_user_id = cur.fetchone()
+            if bright_user_id is not None:
+              conn2 = getConnection('entity')  
+              cur2 = conn2.cursor()
+              cur2.execute("SELECT * FROM public.depository_account_manager_brightdepositoryaccount WHERE user_id = %s;" ,(str(bright_user_id),))
+              pgr_id = cur2.fetchone()[4]
+            #   conn3 = getConnection('bright_payments')  
+            #   cur3 = conn3.cursor()
+              cur.execute("SELECT * FROM credit.lsp_account WHERE user_id = %s;" ,(str(bright_user_id),))
+              acc_pid = cur.fetchone()[3]
+            else:
+                add_allure_step("Unable to fetch bright user id corresponding to" + str(context.buid))
+            context.buid = context.brightuid    
+            context.url = getConfig()[env]['endpoint'] + ApiResources.securityDeposit  
+            context.payLoad = securityDepositPayload(context,context.buid,pgr_id,acc_pid)
+        except (Exception, psycopg2.DatabaseError) as error:
+            add_allure_step(str(error))
+        finally:
+            if conn is not None:
+                conn.close()
+    
 
 
 @when('PostAPI method is executed for "{APIaction}"')

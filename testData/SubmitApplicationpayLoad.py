@@ -367,24 +367,6 @@ def blockCardPayLoad(context,buid):
     return body
 
 
-def securityDepositPayload(context,buid):
-    body = {
-        
-     "meta": {
-        "bm_request_id": "01c00add-2f6b-4ff5-a6b3-0f5240e7e9b9",
-        "bm_session_id": "01c00add-2f6b-4ff5-a6b3-0f5240e7e9b9",
-        "app_version": "123",
-        "client_source": "asif_local_host",
-        "bright_uid": "347810c5-7531-4617-904c-cff14e44e8f0"
-    },
-    "data": {
-        "account_pid": "32b2ae21-92d3-41b9-b07d-7b01ab0be756",
-        "pull_account_pid": "34066068-cfb3-4bf2-a3cb-55c224c21995",
-        "amount":20,
-        "transaction_type": "CC_SECURITY_DEPOSIT"
-    }
-    }
-
 
 def transactionSubmitPayLoad(context,buid):
     body = {
