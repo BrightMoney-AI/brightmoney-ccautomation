@@ -99,7 +99,50 @@ Feature: Bright Money web screen
         And verify continue button presence
         And close browser
 
-    
+
+    @Funnel
+    Scenario: onboarding user till SSN screen
+        # Till ssn screen
+        Given launch chrome browser
+        When go to brightmoney website
+        And login button is clicked
+        And add phone number
+        And click get started button
+        And verify add OTP screen labels
+        Then adding OTP in OTP screen
+        And verify some basic information screen labels
+        Then enter First Name
+        And enter Last Name
+        Then verify continue button is clicked
+        And verify email address screen labels
+        And enter email address
+        Then verify continue button is clicked
+        And verify Date Of Birth screen labels
+        And enter Date Of Birth
+        Then verify continue button is clicked
+        And verify address screen labels
+        And enter address
+        Then verify continue button is clicked
+        And verify total debt screen labels
+        And click on one option on total debt screen
+        Then verify continue button is clicked 
+        And verify current credit score screen labels
+        And click on one option on current credit score screen
+        Then verify continue button is clicked
+        And verify income screen labels
+        And enter income
+        Then verify continue button is clicked
+        And verify how did you hear bright screen labels
+        And click one option in how did you hear bright screen
+        Then verify continue button is clicked
+        And verify setup bright account screen labels
+        And click on once every month option
+        Then verify continue button is clicked
+        And verify unlock exclusive benefits screen labels
+        And verify continue button is clicked
+
+
+
 
 
 
