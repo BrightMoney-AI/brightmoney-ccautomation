@@ -1,7 +1,7 @@
 import os, configparser, allure
 import psycopg2
 
-env = "DEV"
+env = "USM"
 
 def getConfig():
     config = configparser.ConfigParser()

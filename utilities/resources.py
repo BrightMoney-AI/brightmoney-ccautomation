@@ -8,4 +8,5 @@ class ApiResources:
     securityDeposit   = 'api/v0/lsp/review_and_submit_payment/'
     transactionSubmit = 'api/v0/lsp/transactions/submit/'
 
-    
+    usmSignIn = '/api/v1/users/usm/signin/'
+    appPin = '/api/v1/users/usm/trigger/'

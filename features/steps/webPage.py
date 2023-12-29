@@ -5,10 +5,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import keyboard
 
-@given('launch chrome browser')
+@Given('launch chrome browser')
 def step_impl(context):
     context.driver = webdriver.Chrome()
     context.wait = WebDriverWait(context.driver,30)
+
+@When('verify adding OTP')
+def step_impl(context):
+    context.wait.until(EC.visibility_of_element_located((By.XPATH,"//div[@aria-label='lbl_SentCode_CodeVerify']")))
+    keyboard.write('123456')
     
 @when('go to brightmoney website')
 def step_impl(context):
@@ -47,6 +52,20 @@ def step_impl(context):
         print(getStarted)
         assert getStarted.is_enabled() is True
 
+@Then("verify adding first name and last name")
+def step_impl(context):
+    context.wait.until(EC.visibility_of_element_located((By.XPATH,"//div[@aria-label='lbl_Disclaimer']")))
+    # continue_button = context.driver.find_element_by_xpath("//div[aria-label='btn_Next']")
+    context.driver.find_element_by_xpath("//input[@type='text'][1]").send_keys("Petko")
+    context.driver.find_element_by_xpath("//input[@type='text'][2]").send_keys("Plachkov")
+
+@Then("verify name screen labels")
+def step_impl(context):
+    context.wait.until(EC.visibility_of_element_located((By.XPATH,"//div[@aria-label='lbl_Disclaimer']")))
+    disclaimer = context.driver.find_element_by_xpath("//span[@aria-label='lbl_TermsOfUse']").text
+    print(disclaimer)
+    # assert disclaimer == "Term's of use"
+
 @When("add wrong mobile number")
 def step_impl(context):
     phoneNumber = context.driver.find_element_by_xpath("//input[@maxlength=12]")
@@ -55,7 +74,7 @@ def step_impl(context):
 @When("add valid phone number")
 def step_impl(context):
     phoneNumber = context.driver.find_element_by_xpath("//input[@maxlength=12]")
-    phoneNumber.send_keys("6782963011")
+    phoneNumber.send_keys('6782963011')
 
 @When("click get started button")
 def step_impl(context):

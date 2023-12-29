@@ -30,9 +30,20 @@ Feature: Bright Money web screen
         And verify add OTP screen labels
         Then verify adding OTP
         And close browser
-        # And verify re-enter pin heading
-        # And verify reentering pin
-        # And verify name screen heading
+
+    @regression
+    Scenario: validate name screen on web
+        Given launch Chrome browser
+        When go to brightmoney website
+        And login button is clicked
+        And add valid phone number
+        And click get started button
+        And verify add OTP screen labels
+        Then verify adding OTP
+        And verify name screen labels
+        And verify adding first name and last name
+        And close browser
+    
 
     @regression
     Scenario: validate first screen after URL load
