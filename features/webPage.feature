@@ -101,7 +101,7 @@ Feature: Bright Money web screen
 
 
     @Funnel
-    Scenario: onboarding user till SSN screen
+    Scenario: validate onboarding user till SSN screen
         # Till ssn screen
         Given launch chrome browser
         When go to brightmoney website
@@ -111,7 +111,7 @@ Feature: Bright Money web screen
         And verify add OTP screen labels
         Then adding OTP in OTP screen
         And verify some basic information screen labels
-        Then enter First Name
+        And enter First Name
         And enter Last Name
         Then verify continue button is clicked
         And verify email address screen labels
@@ -130,7 +130,7 @@ Feature: Bright Money web screen
         And click on one option on current credit score screen
         Then verify continue button is clicked
         And verify income screen labels
-        And enter income
+        And enter income in income screen
         Then verify continue button is clicked
         And verify how did you hear bright screen labels
         And click one option in how did you hear bright screen
@@ -138,10 +138,70 @@ Feature: Bright Money web screen
         And verify setup bright account screen labels
         And click on once every month option
         Then verify continue button is clicked
-        And verify unlock exclusive benefits screen labels
-        And verify continue button is clicked
+        And verify connect your bank screen labels
+        And verify connect checking account
+        Then close browser
+        Given launch chrome browser
+        When go to brightmoney website
+        And login button is clicked
+        And re-login same phone number 
+        And click get started button
+        And verify add OTP screen labels
+        Then adding OTP in OTP screen
+        And verify choose checking selection screen labels
+        Then verify continue button is clicked
+        And verify ssn screen labels
+        And enter ssn in ssn screen
+        Then verify continue button is clicked
 
+    @CbFunnel
+    Scenario: validate onboarding user in cb funnel
+        #Till user is enrolled
+        Given launch chrome browser
+        When go to brightmoney website
+        And login button is clicked
+        And add phone number
+        And click get started button
+        And verify add OTP screen labels
+        Then adding OTP in OTP screen
+        And verify debt free journey screen labels
+        Then verify continue button is clicked
+        And verify crush your debt screen labels
+        And verify click on info button
+        And verify bright credit FAQ screen labels
+        And verify got it button is clicked
+        Then verify continue button is clicked
+        And verify getting best offers screen labels
+        And verify click on info button in getting best offers screen
+        And verify how bright helps FAQ screen labels
+        And verify got it button is clicked
+        Then verify continue button is clicked
+        And verify how bright builder works screen labels
+        And verify click info button in how bright builder works screen
+        And verify bright credit FAQ screen labels
+        And verify got it button is clicked
+        Then verify tell me more button is clicked
+        And verify create additional payment history screen labels
+        And verify click info button in create additional payment history screen
+        And verify bright credit FAQ screen labels 
+        And verify got it button is clicked
+        Then verify continue button is clicked
+        And verify approve bright builder screen labels
+        And verify click info button in approve bright builder screen
+        And verify bright credit FAQ screen labels 
+        And verify got it button is clicked
+        And verify check box is clicked
+        Then verify continue button is clicked
+        And verify set up bright builder screen labels
+        And verify date is clicked
+        Then verify continue button is clicked
+        And verify monet screen labels
+        And verify other plans button is clicked
+        And verify limited time offer screen labels
+        And verify select plan button is clicked
+        Then verify continue button is clicked
 
+   
 
 
 

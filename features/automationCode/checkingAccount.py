@@ -431,9 +431,10 @@ def checkingConnect(phone_num):
 
     response = requests.request("POST",url="https://gateway-dev.brightmoney.co/api/v1/users/usm/trigger/",headers=headers,data=json.dumps(payload))
     result = response.json()
-    print(result)
+    print(response.status_code())
+    # print('here result :' , result)
     return result['data']['action']
 
-
-while(checkingConnect("+14799742446")!='CHOOSE_CHECKING_ACCOUNTS_ACTION'):
-    checkingConnect("+14799742446")
+def validateAccountConnect(phone_number):
+    while(checkingConnect(phone_number)!='CHOOSE_CHECKING_ACCOUNTS_ACTION'):
+        checkingConnect(phone_number)
